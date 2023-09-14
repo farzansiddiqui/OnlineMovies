@@ -9,11 +9,10 @@ import com.siddiqui.onlinemovies.databinding.MovieLayoutBinding
 class MovieAdapter: RecyclerView.Adapter<MovieAdapter.MyViewModel>() {
     private var movieList = ArrayList<Result>()
 
-    fun setMovieList(movieList : List<Result>){
+    fun setMovieList(movieList : List<Result>) {
         this.movieList = movieList as ArrayList<Result>
         notifyDataSetChanged()
     }
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewModel {
         return MyViewModel(MovieLayoutBinding.inflate(LayoutInflater.from(parent.context)))
