@@ -30,7 +30,7 @@ class ListAdapter(val arrayList: ArrayList<ProfileModel>): RecyclerView.Adapter<
                 fun bind(profileModel: ProfileModel){
                       textView.text = profileModel.name
                         emailTextView.text = profileModel.email
-                        imageView.setImageResource(profileModel.image)
+                        Picasso.get().load(profileModel.imageUrl).into(imageView)
                 }
         }
 }

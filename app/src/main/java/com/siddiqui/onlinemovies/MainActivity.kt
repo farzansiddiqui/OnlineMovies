@@ -1,9 +1,14 @@
 package com.siddiqui.onlinemovies
 
+import android.app.ProgressDialog
 import android.content.Intent
+import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.android.volley.Request
@@ -77,6 +82,7 @@ class MainActivity : AppCompatActivity() {
         val requestQueue = Volley.newRequestQueue(this)
         val listJsonResponse = mutableListOf<String>()
 
+
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url,null, {
             val jsonArray = it.getJSONArray("data")
 
@@ -89,6 +95,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("TAG", "volleyGet: $listJsonResponse")
 
         }, {
+
             it.printStackTrace()
         })
         requestQueue.add(jsonObjectRequest)

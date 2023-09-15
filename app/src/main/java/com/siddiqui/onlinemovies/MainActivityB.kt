@@ -1,27 +1,40 @@
 package com.siddiqui.onlinemovies
 
+import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.google.gson.JsonArray
+import com.siddiqui.onlinemovies.databinding.ActivityMainBBinding
 import com.squareup.picasso.Picasso
 
 class MainActivityB : AppCompatActivity() {
 
     val arrayList = ArrayList<ProfileModel>()
     lateinit var adapter: ListAdapter
+    lateinit var binding:ActivityMainBBinding
+    private lateinit var queue: RequestQueue
+    val TAG = "TAG"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main_b)
+        binding = ActivityMainBBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
+        volleyLoad()
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
 
-
+        val progressBar = ProgressBar(this, null,android.R.attr.progressBarStyleSmall)
+        progressBar.visibility = View.VISIBLE
 
       /*  findViewById<Button>(R.id.clickBtnB).setOnClickListener {
             startActivity(Intent(this, MainActivityC::class.java))
@@ -40,22 +53,32 @@ class MainActivityB : AppCompatActivity() {
 
     private fun volleyLoad(){
         val url = "https://reqres.in/api/users"
-        val queue = Volley.newRequestQueue(this)
+        queue = MySingleton.getInstance(this.applicationContext).requestQueue
 
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.POST,url,null, {
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET,url,null, {
                     val jsonArray = it.getJSONArray("data")
                     for (i in 0 until jsonArray.length()){
                         val jsonObject = jsonArray.getJSONObject(i)
                         val fName = jsonObject.getString("first_name")
-                        var lName = jsonObject.getString("last_name")
+                        val lName = jsonObject.getString("last_name")
                         val fullName = "$fName $lName"
-                        var email = jsonObject.getString("email")
+                        val email = jsonObject.getString("email")
                         val imgUrl = jsonObject.getString("avatar")
-                        arrayList.add(ProfileModel(fullName,email,)
-
+                        arrayList.add(ProfileModel(fullName,email, imgUrl))
                     }
-        }, {
+            adapter = ListAdapter(arrayList)
+            binding.recyclerView.adapter = adapter
 
+        }, {
+            it.printStackTrace()
         })
+
+        jsonObjectRequest.tag = TAG
+        MySingleton.getInstance(this).addRequestQueue(jsonObjectRequest)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        queue.cancelAll(TAG)
     }
 }
