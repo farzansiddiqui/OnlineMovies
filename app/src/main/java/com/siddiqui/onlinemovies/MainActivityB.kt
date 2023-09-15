@@ -11,18 +11,18 @@ class MainActivityB : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_b)
 
-        findViewById<Button>(R.id.clickBtnB).setOnClickListener {
+      /*  findViewById<Button>(R.id.clickBtnB).setOnClickListener {
             startActivity(Intent(this, MainActivityC::class.java))
         }
 
         findViewById<Button>(R.id.btn_AgainClick).setOnClickListener {
             startActivity(Intent(this, MainActivityB::class.java))
-        }
+        }*/
 
     }
 
-    override fun onNewIntent(intent: Intent?) {
+  /*  override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         Toast.makeText(this, "on New Intent", Toast.LENGTH_SHORT).show();
-    }
+    }*/
 }

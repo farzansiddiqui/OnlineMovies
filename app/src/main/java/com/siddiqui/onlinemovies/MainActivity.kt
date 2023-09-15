@@ -7,11 +7,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.android.volley.Request
-import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.google.gson.JsonObject
 import com.siddiqui.onlinemovies.databinding.ActivityMainBinding
 import org.json.JSONObject
 
@@ -40,19 +37,24 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, MainActivityD::class.java))
         }
         val queue = Volley.newRequestQueue(this)
-        var url = "https://reqres.in/api/users";
+        val url = "https://reqres.in/api/users";
 
         val jsonOObject = JSONObject()
         jsonOObject.put("name","morpheus")
         jsonOObject.put("job","leader")
 
-
-        val jsonObjectRequest = JsonObjectRequest(Request.Method.POST,url,null, {
-
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.POST,url,jsonOObject, {
+           val name = it.getString("name");
+            val job = it.getString("job")
+            Log.d("TAG", "fetch from server: $name $job")
 
         }, {
-
+        it.printStackTrace()
         })
+
+        queue.add(jsonObjectRequest)
+
+    volleyGet()
 
     }
     private fun prepareRecyclerView() {
@@ -61,5 +63,28 @@ class MainActivity : AppCompatActivity() {
             layoutManager = GridLayoutManager(applicationContext,2)
             adapter = movieAdapter
         }
+    }
+
+    private fun volleyGet() {
+
+        val url = "https://reqres.in/api/users?page=2"
+        val requestQueue = Volley.newRequestQueue(this)
+        val listJsonResponse = mutableListOf<String>()
+        val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url,null, {
+            val jsonArray = it.getJSONArray("data")
+
+            for (i in 0 until jsonArray.length()){
+                val jsonObject = jsonArray.getJSONObject(i)
+                val email = jsonObject.getString("email")
+                listJsonResponse.add(email)
+            }
+
+            Log.d("TAG", "volleyGet: $listJsonResponse")
+
+        }, {
+            it.printStackTrace()
+        })
+        requestQueue.add(jsonObjectRequest)
+
     }
 }
