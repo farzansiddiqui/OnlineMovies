@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.siddiqui.onlinemovies.databinding.ActivityMainBinding
@@ -17,6 +18,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding:ActivityMainBinding
     private lateinit var viewModel: MovieViewModel
     private lateinit var movieAdapter : MovieAdapter
+    var queue: RequestQueue? = null
+
+    val TAG = "MyTag"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -36,9 +40,10 @@ class MainActivity : AppCompatActivity() {
         binding.button.setOnClickListener {
             startActivity(Intent(this, MainActivityD::class.java))
         }
-        val queue = Volley.newRequestQueue(this)
-        val url = "https://reqres.in/api/users";
 
+        val url = "https://reqres.in/api/users";
+      //  val queue = Volley.newRequestQueue(this)
+        queue = Volley.newRequestQueue(this)
         val jsonOObject = JSONObject()
         jsonOObject.put("name","morpheus")
         jsonOObject.put("job","leader")
@@ -46,13 +51,14 @@ class MainActivity : AppCompatActivity() {
         val jsonObjectRequest = JsonObjectRequest(Request.Method.POST,url,jsonOObject, {
            val name = it.getString("name");
             val job = it.getString("job")
+
             Log.d("TAG", "fetch from server: $name $job")
 
         }, {
         it.printStackTrace()
         })
-
-        queue.add(jsonObjectRequest)
+        jsonObjectRequest.tag = TAG
+        queue?.add(jsonObjectRequest)
 
     volleyGet()
 
@@ -70,6 +76,7 @@ class MainActivity : AppCompatActivity() {
         val url = "https://reqres.in/api/users?page=2"
         val requestQueue = Volley.newRequestQueue(this)
         val listJsonResponse = mutableListOf<String>()
+
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url,null, {
             val jsonArray = it.getJSONArray("data")
 
@@ -85,6 +92,10 @@ class MainActivity : AppCompatActivity() {
             it.printStackTrace()
         })
         requestQueue.add(jsonObjectRequest)
+    }
 
+    override fun onStop() {
+        super.onStop()
+        queue?.cancelAll(TAG)
     }
 }
