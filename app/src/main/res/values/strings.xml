@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">OnlineMovies</string>
+    <string name="add_data">Add Data!</string>
 </resources>

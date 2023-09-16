@@ -1,16 +1,14 @@
 package com.siddiqui.onlinemovies
 
-import android.app.ProgressDialog
 import android.content.Intent
-import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
@@ -24,6 +22,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MovieViewModel
     private lateinit var movieAdapter : MovieAdapter
     var queue: RequestQueue? = null
+    private lateinit var mainViewModel: MainViewModel
+    lateinit var adapter: NoteRecyclerAdapter
+    private var viewManager = LinearLayoutManager(this)
 
     val TAG = "MyTag"
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,6 +32,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val application = requireNotNull(this).application
+        val factory = MainViewModelFactory()
+        mainViewModel = ViewModelProvider(this,factory)[MainViewModel::class.java]
         prepareRecyclerView()
         viewModel = ViewModelProvider(this)[MovieViewModel::class.java]
         viewModel.getPopularMovies()
@@ -67,6 +71,12 @@ class MainActivity : AppCompatActivity() {
 
     volleyGet()
 
+        binding.addBtn.setOnClickListener {
+            addData()
+        }
+
+        initialiseAdapter()
+
     }
     private fun prepareRecyclerView() {
         movieAdapter = MovieAdapter()
@@ -76,12 +86,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun initialiseAdapter(){
+        binding.recyclerViewList.layoutManager = viewManager
+        observeData()
+    }
+
+    fun observeData(){
+        mainViewModel.lst.observe(this, Observer{
+            Log.i("data",it.toString())
+            binding.recyclerViewList.adapter= NoteRecyclerAdapter(mainViewModel, it, this)
+        })
+    }
+
+
     private fun volleyGet() {
 
         val url = "https://reqres.in/api/users?page=2"
         val requestQueue = Volley.newRequestQueue(this)
         val listJsonResponse = mutableListOf<String>()
-
 
         val jsonObjectRequest = JsonObjectRequest(Request.Method.GET, url,null, {
             val jsonArray = it.getJSONArray("data")
@@ -104,5 +126,17 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         queue?.cancelAll(TAG)
+    }
+
+    fun addData(){
+        val title = binding.editText.text.toString()
+        if (title.isNullOrBlank()){
+            Toast.makeText(this@MainActivity, "Enter Value!", Toast.LENGTH_SHORT).show()
+        }else{
+            var blog = Blog(title)
+            mainViewModel.addBlog(blog)
+            binding.editText.text.clear()
+            binding.recyclerViewList.adapter?.notifyDataSetChanged()
+        }
     }
 }
