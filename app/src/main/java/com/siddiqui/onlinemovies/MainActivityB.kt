@@ -1,22 +1,14 @@
 package com.siddiqui.onlinemovies
 
-import android.app.ProgressDialog
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.Request
 import com.android.volley.RequestQueue
-import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
-import com.google.gson.JsonArray
 import com.siddiqui.onlinemovies.databinding.ActivityMainBBinding
-import com.squareup.picasso.Picasso
 
 class MainActivityB : AppCompatActivity() {
 

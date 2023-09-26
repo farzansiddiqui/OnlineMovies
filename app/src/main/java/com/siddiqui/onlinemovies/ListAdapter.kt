@@ -27,8 +27,8 @@ class ListAdapter(val arrayList: ArrayList<ProfileModel>): RecyclerView.Adapter<
                 var textView = itemView.findViewById<TextView>(R.id.nameProfile)
                 var emailTextView = itemView.findViewById<TextView>(R.id.emailId)
                 var imageView  = itemView.findViewById<ImageView>(R.id.imageView)
-                fun bind(profileModel: ProfileModel){
-                      textView.text = profileModel.name
+                fun bind(profileModel: ProfileModel) {
+                        textView.text = profileModel.name
                         emailTextView.text = profileModel.email
                         Picasso.get().load(profileModel.imageUrl).into(imageView)
                 }

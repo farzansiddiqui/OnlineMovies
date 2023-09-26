@@ -14,6 +14,7 @@ import com.android.volley.RequestQueue
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.siddiqui.onlinemovies.databinding.ActivityMainBinding
+import kotlinx.coroutines.yield
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
@@ -23,7 +24,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var movieAdapter : MovieAdapter
     var queue: RequestQueue? = null
     private lateinit var mainViewModel: MainViewModel
-    lateinit var adapter: NoteRecyclerAdapter
     private var viewManager = LinearLayoutManager(this)
 
     val TAG = "MyTag"
@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val application = requireNotNull(this).application
         val factory = MainViewModelFactory()
         mainViewModel = ViewModelProvider(this,factory)[MainViewModel::class.java]
         prepareRecyclerView()
@@ -90,11 +89,14 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerViewList.layoutManager = viewManager
         observeData()
     }
+    suspend fun task1(){
+        Log.d(TAG, "task1: ")
+           yield()
+    }
 
     fun observeData(){
         mainViewModel.lst.observe(this, Observer{
-            Log.i("data",it.toString())
-            binding.recyclerViewList.adapter= NoteRecyclerAdapter(mainViewModel, it, this)
+            binding.recyclerViewList.adapter = NoteRecyclerAdapter(mainViewModel, it, this)
         })
     }
 
@@ -130,7 +132,7 @@ class MainActivity : AppCompatActivity() {
 
     fun addData(){
         val title = binding.editText.text.toString()
-        if (title.isNullOrBlank()){
+        if (title.isBlank()){
             Toast.makeText(this@MainActivity, "Enter Value!", Toast.LENGTH_SHORT).show()
         }else{
             var blog = Blog(title)
